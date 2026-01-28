@@ -1,0 +1,18 @@
+---
+# tasks file for nginx_custom
+
+- name: Установка Nginx
+  apt:
+    name: "nginx"
+    state: present
+
+- name: Ставим  прокси
+  ansible.builtin.template:
+    src: default
+    dest: /etc/nginx/sites-enabled/
+  when: "'vm_3' in inventory_hostname" # Выполнится только тогда, когда в имени есть vm_3
+  notify: "Nginx Reloader"
+
+- name: Меняем имя машины
+  shell: "echo {{ inventory_hostname }} > /etc/hostname"
+  when: "inventory_hostname != ansible_hostname"
